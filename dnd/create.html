@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Character | D&D Sheet Hub</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="dnd-nav">
+      <div class="dnd-logo">⚔ D&D Sheet Hub</div>
+      <div class="dnd-nav-links">
+        <a href="index.html">Home</a>
+        <a href="create.html" class="active">Create</a>
+        <a href="character.html">Sheet</a>
+        <a href="party.html">Party</a>
+      </div>
+    </nav>
+
+    <div class="dnd-container">
+      <div class="dnd-header">
+        <h1 class="dnd-title">Forge Your Hero</h1>
+        <p class="dnd-subtitle">Fill in the details and inscribe your legend</p>
+      </div>
+
+      <div class="dnd-panel">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <form id="characterForm">
+          <div class="grid-2">
+            <div class="field-group">
+              <label class="field-label" for="name">Character Name</label>
+              <input
+                class="dnd-input"
+                id="name"
+                name="name"
+                type="text"
+                placeholder="e.g. Thorne Ashveil"
+                maxlength="30"
+                required
+              />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="level">Level</label>
+              <input
+                class="dnd-input"
+                id="level"
+                name="level"
+                type="number"
+                min="1"
+                max="20"
+                value="1"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="field-group">
+              <label class="field-label" for="class">Class</label>
+              <select class="dnd-select" id="class" name="class" required>
+                <option value="">Choose class</option>
+                <option>Barbarian</option>
+                <option>Bard</option>
+                <option>Cleric</option>
+                <option>Druid</option>
+                <option>Fighter</option>
+                <option>Monk</option>
+                <option>Paladin</option>
+                <option>Ranger</option>
+                <option>Rogue</option>
+                <option>Sorcerer</option>
+                <option>Warlock</option>
+                <option>Wizard</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="race">Race</label>
+              <select class="dnd-select" id="race" name="race" required>
+                <option value="">Choose race</option>
+                <option>Human</option>
+                <option>Elf</option>
+                <option>Dwarf</option>
+                <option>Halfling</option>
+                <option>Gnome</option>
+                <option>Half-Elf</option>
+                <option>Half-Orc</option>
+                <option>Tiefling</option>
+                <option>Dragonborn</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="background">Background</label>
+              <select class="dnd-select" id="background" name="background">
+                <option value="">Choose background</option>
+                <option>Acolyte</option>
+                <option>Criminal</option>
+                <option>Folk Hero</option>
+                <option>Noble</option>
+                <option>Outlander</option>
+                <option>Sage</option>
+                <option>Soldier</option>
+                <option>Urchin</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-divider"><span>Ability Scores</span></div>
+
+          <div class="ability-grid" id="abilityGrid"></div>
+
+          <div class="section-divider"><span>Details</span></div>
+
+          <div class="grid-2">
+            <div class="field-group">
+              <label class="field-label" for="notes">Notes & Backstory</label>
+              <textarea
+                class="dnd-textarea"
+                id="notes"
+                name="notes"
+                placeholder="Backstory, equipment, goals, ideals..."
+              ></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Character Portrait (optional)</label>
+              <div class="image-drop" id="imageDrop">
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="file-input-hidden"
+                  id="imageInput"
+                />
+                <div class="image-drop-icon" id="dropIcon">🖼</div>
+                <div class="image-drop-text" id="dropText">
+                  Click or drop image
+                </div>
+                <div class="image-preview-wrap" id="previewWrap">
+                  <img
+                    class="image-preview"
+                    id="imagePreview"
+                    alt="Character portrait"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn-secondary" id="clearBtn">
+              Clear
+            </button>
+            <button type="submit" class="btn-primary">⚔ Save Character</button>
+          </div>
+          <p class="status-msg" id="statusMsg" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
