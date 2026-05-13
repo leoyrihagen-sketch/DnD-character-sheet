@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Party & Map | D&D Sheet Hub</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* PARTY GRID */
+      .party-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 4px;
+      }
+
+      .member-card {
+        background: #120f0a;
+        border: 1px solid #3a2e1c;
+        border-radius: 4px;
+        padding: 20px 16px;
+        position: relative;
+        transition: border-color 0.2s;
+      }
+
+      .member-card:hover {
+        border-color: #c9a45a44;
+      }
+
+      .member-card.empty {
+        border-style: dashed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 160px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+
+      .member-card.empty:hover {
+        border-color: #c9a45a;
+        background: #1a1408;
+      }
+
+      .member-add-icon {
+        font-size: 28px;
+        color: #3a2e1c;
+        margin-bottom: 8px;
+      }
+
+      .member-add-label {
+        font-family: "Cinzel", serif;
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #4a3820;
+      }
+
+      .member-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 4px;
+        background: #1e1810;
+        border: 1px solid #3a2e1c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+
+      .member-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .member-name {
+        font-family: "Cinzel", serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #d4a840;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        word-break: break-word;
+      }
+
+      .member-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 12px;
+      }
+
+      .member-badge {
+        font-family: "Cinzel", serif;
+        font-size: 8px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #8a7040;
+        background: #1e1810;
+        border: 1px solid #3a2e1c;
+        border-radius: 2px;
+        padding: 3px 7px;
+      }
+
+      .member-hp {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .hp-label {
+        font-family: "Cinzel", serif;
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #5a4a30;
+        min-width: 24px;
+      }
+
+      .hp-bar-wrap {
+        flex: 1;
+        height: 6px;
+        background: #1e1810;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .hp-bar {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(to right, #7a2020, #c9a45a);
+        transition: width 0.3s;
+      }
+
+      .hp-text {
+        font-family: "Cinzel", serif;
+        font-size: 11px;
+        color: #8a7060;
+        min-width: 38px;
+        text-align: right;
+      }
+
+      .hp-controls {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+
+      .hp-btn {
+        flex: 1;
+        background: #1a1510;
+        border: 1px solid #3a2e1c;
+        color: #8a7060;
+        font-family: "Cinzel", serif;
+        font-size: 16px;
+        border-radius: 3px;
+        padding: 4px;
+        cursor: pointer;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+        line-height: 1;
+      }
+
+      .hp-btn:hover {
+        color: #c9a45a;
+        border-color: #c9a45a;
+      }
+
+      .hp-input {
+        width: 48px;
+        background: #120f0a;
+        border: 1px solid #3a2e1c;
+        border-radius: 3px;
+        color: #e8dcc8;
+        font-family: "Cinzel", serif;
+        font-size: 13px;
+        text-align: center;
+        padding: 4px 6px;
+        outline: none;
+      }
+
+      .hp-input:focus {
+        border-color: #c9a45a;
+      }
+
+      .member-remove {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: #3a2010;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: "Cinzel", serif;
+        transition: color 0.2s;
+        line-height: 1;
+      }
+
+      .member-remove:hover {
+        color: #aa4040;
+      }
+
+      /* ADD MEMBER MODAL */
+      .modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-backdrop.open {
+        display: flex;
+      }
+
+      .modal {
+        background: #1c1510;
+        border: 1px solid #4a3820;
+        border-radius: 6px;
+        padding: 32px 28px;
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+      }
+
+      .modal-title {
+        font-family: "Cinzel", serif;
+        font-size: 16px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #d4a840;
+        margin-bottom: 20px;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: #5a4a30;
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .modal-close:hover {
+        color: #c9a45a;
+      }
+
+      .modal-field {
+        margin-bottom: 14px;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      /* MAP */
+      .map-drop {
+        border: 1px dashed #3a2e1c;
+        border-radius: 4px;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .map-drop:hover {
+        border-color: #c9a45a;
+        background: #1a1408;
+      }
+
+      .map-drop.has-map {
+        border-style: solid;
+        border-color: #3a2e1c;
+        padding: 0;
+        cursor: default;
+      }
+
+      .map-drop.has-map:hover {
+        background: transparent;
+      }
+
+      .map-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        max-height: 500px;
+      }
+
+      .map-drop-icon {
+        font-size: 40px;
+        color: #3a2e1c;
+        margin-bottom: 12px;
+      }
+      .map-drop-title {
+        font-family: "Cinzel", serif;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #5a4a30;
+        margin-bottom: 6px;
+      }
+      .map-drop-sub {
+        font-family: "Crimson Pro", serif;
+        font-style: italic;
+        font-size: 14px;
+        color: #3a2e1c;
+      }
+
+      .map-file-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .map-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      /* NOTES */
+      .session-notes {
+        background: #120f0a;
+        border: 1px solid #3a2e1c;
+        border-radius: 4px;
+        width: 100%;
+        padding: 14px;
+        color: #c8b890;
+        font-family: "Crimson Pro", serif;
+        font-size: 16px;
+        line-height: 1.7;
+        resize: vertical;
+        min-height: 120px;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+      }
+
+      .session-notes:focus {
+        border-color: #c9a45a;
+      }
+      .session-notes::placeholder {
+        color: #3a2e1c;
+        font-style: italic;
+      }
+
+      @media (max-width: 650px) {
+        .party-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .party-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dnd-nav">
+      <div class="dnd-logo">⚔ D&D Sheet Hub</div>
+      <div class="dnd-nav-links">
+        <a href="index.html">Home</a>
+        <a href="create.html">Create</a>
+        <a href="character.html">Sheet</a>
+        <a href="party.html" class="active">Party</a>
+        <a href="settings.html">Settings</a>
+      </div>
+    </nav>
+
+    <div class="dnd-container" style="max-width: 900px">
+      <div class="dnd-header">
+        <h1 class="dnd-title">Party & Map</h1>
+        <p class="dnd-subtitle">Track your companions and chart the realm</p>
+      </div>
+
+      <!-- PARTY MEMBERS -->
+      <div class="dnd-panel" style="margin-bottom: 20px">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="section-divider" style="margin-top: 0">
+          <span>Party Members</span>
+        </div>
+        <div class="party-grid" id="partyGrid"></div>
+      </div>
+
+      <!-- MAP -->
+      <div class="dnd-panel" style="margin-bottom: 20px">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="section-divider" style="margin-top: 0">
+          <span>Campaign Map</span>
+        </div>
+
+        <div class="map-drop" id="mapDrop">
+          <input
+            type="file"
+            accept="image/*"
+            class="map-file-input"
+            id="mapInput"
+          />
+          <div id="mapEmpty">
+            <div class="map-drop-icon">🗺️</div>
+            <div class="map-drop-title">Upload Campaign Map</div>
+            <div class="map-drop-sub">Click or drag an image here</div>
+          </div>
+          <img
+            class="map-img"
+            id="mapImg"
+            style="display: none"
+            alt="Campaign map"
+          />
+        </div>
+
+        <div class="map-actions" id="mapActions" style="display: none">
+          <button
+            class="btn-secondary"
+            id="replaceMapBtn"
+            style="position: relative; overflow: hidden"
+          >
+            Replace Map
+            <input
+              type="file"
+              accept="image/*"
+              style="position: absolute; inset: 0; opacity: 0; cursor: pointer"
+              id="replaceMapInput"
+            />
+          </button>
+          <button
+            class="btn-secondary"
+            id="clearMapBtn"
+            style="color: #5a3030; border-color: #3a2010"
+          >
+            ✕ Remove Map
+          </button>
+        </div>
+      </div>
+
+      <!-- SESSION NOTES -->
+      <div class="dnd-panel">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="section-divider" style="margin-top: 0">
+          <span>Session Notes</span>
+        </div>
+        <textarea
+          class="session-notes"
+          id="sessionNotes"
+          placeholder="Campaign notes, quest logs, NPC names, loot..."
+        ></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 12px">
+          <button class="btn-primary" id="saveNotesBtn" style="flex: 1">
+            ✦ Save Notes
+          </button>
+        </div>
+        <p class="status-msg" id="notesStatus"></p>
+      </div>
+    </div>
+
+    <!-- ADD MEMBER MODAL -->
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal">
+        <div class="modal-title">Add Party Member</div>
+        <button class="modal-close" id="modalClose">✕</button>
+
+        <div class="modal-field">
+          <label class="field-label">Name</label>
+          <input
+            class="dnd-input"
+            id="mName"
+            type="text"
+            placeholder="Character name"
+            maxlength="30"
+          />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+          <div class="modal-field">
+            <label class="field-label">Class</label>
+            <select class="dnd-select" id="mClass">
+              <option value="">—</option>
+              <option>Barbarian</option>
+              <option>Bard</option>
+              <option>Cleric</option>
+              <option>Druid</option>
+              <option>Fighter</option>
+              <option>Monk</option>
+              <option>Paladin</option>
+              <option>Ranger</option>
+              <option>Rogue</option>
+              <option>Sorcerer</option>
+              <option>Warlock</option>
+              <option>Wizard</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Level</label>
+            <input
+              class="dnd-input"
+              id="mLevel"
+              type="number"
+              min="1"
+              max="20"
+              value="1"
+            />
+          </div>
+        </div>
+        <div class="modal-field">
+          <label class="field-label">Max HP</label>
+          <input
+            class="dnd-input"
+            id="mMaxHp"
+            type="number"
+            min="1"
+            value="10"
+          />
+        </div>
+        <div class="modal-field">
+          <label class="field-label">Player Name (optional)</label>
+          <input
+            class="dnd-input"
+            id="mPlayer"
+            type="text"
+            placeholder="e.g. Ola"
+            maxlength="30"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" id="modalCancel">Cancel</button>
+          <button class="btn-primary" id="modalSave" style="flex: 1">
+            Add to Party
+          </button>
+        </div>
+        <p class="status-msg" id="modalStatus"></p>
+      </div>
+    </div>
+
+    <script>
+      // ---- STATE ----
+      let party = JSON.parse(localStorage.getItem("dnd_party") || "[]");
+      let mapDataUrl = localStorage.getItem("dnd_map") || "";
+
+      function saveParty() {
+        localStorage.setItem("dnd_party", JSON.stringify(party));
+      }
+
+      // ---- RENDER PARTY ----
+      function renderParty() {
+        const grid = document.getElementById("partyGrid");
+        grid.innerHTML = "";
+
+        party.forEach((member, idx) => {
+          const hpPct = Math.max(
+            0,
+            Math.min(100, Math.round((member.hp / member.maxHp) * 100)),
+          );
+          const card = document.createElement("div");
+          card.className = "member-card";
+          card.innerHTML = `
+            <button class="member-remove" data-idx="${idx}" title="Remove">✕</button>
+            <div class="member-avatar">🧙</div>
+            <div class="member-name">${member.name}</div>
+            <div class="member-meta">
+              ${member.class ? `<span class="member-badge">${member.class}</span>` : ""}
+              ${member.level ? `<span class="member-badge">Lv ${member.level}</span>` : ""}
+              ${member.player ? `<span class="member-badge">🎲 ${member.player}</span>` : ""}
+            </div>
+            <div class="member-hp">
+              <span class="hp-label">HP</span>
+              <div class="hp-bar-wrap">
+                <div class="hp-bar" style="width:${hpPct}%"></div>
+              </div>
+              <span class="hp-text">${member.hp}/${member.maxHp}</span>
+            </div>
+            <div class="hp-controls">
+              <button class="hp-btn" data-idx="${idx}" data-action="damage">−</button>
+              <input class="hp-input" type="number" min="1" value="1" id="hpAmt_${idx}" />
+              <button class="hp-btn" data-idx="${idx}" data-action="heal">+</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        // Add new member button
+        const addCard = document.createElement("div");
+        addCard.className = "member-card empty";
+        addCard.id = "addMemberBtn";
+        addCard.innerHTML = `
+          <div class="member-add-icon">＋</div>
+          <div class="member-add-label">Add Member</div>
+        `;
+        addCard.addEventListener("click", openModal);
+        grid.appendChild(addCard);
+
+        // HP button events
+        grid.querySelectorAll(".hp-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = parseInt(btn.dataset.idx);
+            const amtInput = document.getElementById(`hpAmt_${idx}`);
+            const amt = Math.max(1, parseInt(amtInput.value) || 1);
+            if (btn.dataset.action === "damage") {
+              party[idx].hp = Math.max(0, party[idx].hp - amt);
+            } else {
+              party[idx].hp = Math.min(party[idx].maxHp, party[idx].hp + amt);
+            }
+            saveParty();
+            renderParty();
+          });
+        });
+
+        // Remove events
+        grid.querySelectorAll(".member-remove").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const idx = parseInt(btn.dataset.idx);
+            if (confirm(`Remove ${party[idx].name} from the party?`)) {
+              party.splice(idx, 1);
+              saveParty();
+              renderParty();
+            }
+          });
+        });
+      }
+
+      // ---- MODAL ----
+      function openModal() {
+        document.getElementById("modalBackdrop").classList.add("open");
+        document.getElementById("mName").focus();
+      }
+
+      function closeModal() {
+        document.getElementById("modalBackdrop").classList.remove("open");
+        document.getElementById("mName").value = "";
+        document.getElementById("mClass").value = "";
+        document.getElementById("mLevel").value = "1";
+        document.getElementById("mMaxHp").value = "10";
+        document.getElementById("mPlayer").value = "";
+        document.getElementById("modalStatus").textContent = "";
+      }
+
+      document
+        .getElementById("modalClose")
+        .addEventListener("click", closeModal);
+      document
+        .getElementById("modalCancel")
+        .addEventListener("click", closeModal);
+      document
+        .getElementById("modalBackdrop")
+        .addEventListener("click", (e) => {
+          if (e.target === document.getElementById("modalBackdrop"))
+            closeModal();
+        });
+
+      document.getElementById("modalSave").addEventListener("click", () => {
+        const name = document.getElementById("mName").value.trim();
+        if (!name) {
+          document.getElementById("modalStatus").textContent =
+            "Please enter a name.";
+          return;
+        }
+        const maxHp = Math.max(
+          1,
+          parseInt(document.getElementById("mMaxHp").value) || 10,
+        );
+        party.push({
+          name,
+          class: document.getElementById("mClass").value,
+          level: parseInt(document.getElementById("mLevel").value) || 1,
+          player: document.getElementById("mPlayer").value.trim(),
+          maxHp,
+          hp: maxHp,
+        });
+        saveParty();
+        renderParty();
+        closeModal();
+      });
+
+      // ---- MAP ----
+      function applyMap(src) {
+        mapDataUrl = src;
+        localStorage.setItem("dnd_map", src);
+        const img = document.getElementById("mapImg");
+        const empty = document.getElementById("mapEmpty");
+        const drop = document.getElementById("mapDrop");
+        img.src = src;
+        img.style.display = "block";
+        empty.style.display = "none";
+        drop.classList.add("has-map");
+        document.getElementById("mapInput").style.pointerEvents = "none";
+        document.getElementById("mapActions").style.display = "flex";
+      }
+
+      function clearMap() {
+        mapDataUrl = "";
+        localStorage.removeItem("dnd_map");
+        const img = document.getElementById("mapImg");
+        const empty = document.getElementById("mapEmpty");
+        const drop = document.getElementById("mapDrop");
+        img.src = "";
+        img.style.display = "none";
+        empty.style.display = "block";
+        drop.classList.remove("has-map");
+        document.getElementById("mapInput").style.pointerEvents = "";
+        document.getElementById("mapActions").style.display = "none";
+      }
+
+      function readMapFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => applyMap(reader.result);
+        reader.readAsDataURL(file);
+      }
+
+      document
+        .getElementById("mapInput")
+        .addEventListener("change", function () {
+          readMapFile(this.files?.[0]);
+        });
+
+      document
+        .getElementById("replaceMapInput")
+        .addEventListener("change", function () {
+          readMapFile(this.files?.[0]);
+        });
+
+      document.getElementById("clearMapBtn").addEventListener("click", () => {
+        if (confirm("Remove the campaign map?")) clearMap();
+      });
+
+      // ---- SESSION NOTES ----
+      document.getElementById("sessionNotes").value =
+        localStorage.getItem("dnd_session_notes") || "";
+
+      document.getElementById("saveNotesBtn").addEventListener("click", () => {
+        localStorage.setItem(
+          "dnd_session_notes",
+          document.getElementById("sessionNotes").value,
+        );
+        const s = document.getElementById("notesStatus");
+        s.textContent = "Notes saved ✦";
+        s.style.color = "#c9a45a";
+      });
+
+      // ---- INIT ----
+      renderParty();
+      if (mapDataUrl) applyMap(mapDataUrl);
+    </script>
+  </body>
+</html>
